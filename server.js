@@ -1,13 +1,14 @@
 const express = require('express');
 const app = express();
-const http = require('http').Server(app);
+const port = process.env.PORT || 3000;
+const server = app.listen(port)
+// const http = require('http').Server(app);
 const path = require('path');
 
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 
-const io = require('socket.io')(http);
-const port = process.env.PORT || 3000;
+const io = require('socket.io').listen(server);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');  
@@ -61,7 +62,7 @@ let freq = 110;
 MAX CLIENTS
 */
 let maxClients = io.of('/maxclients');
-maxclients.on('connection', (socket) => {
+maxClients.on('connection', (socket) => {
   console.log('a Max client connected');
   socket.emit('freq', freq);
 });
@@ -87,6 +88,6 @@ participants.on('connection', (socket) => {
   });
 });
 
-http.listen(port, () => {
-  console.log('ready');
-});
+// http.listen(port, () => {
+//   console.log('ready');
+// });
