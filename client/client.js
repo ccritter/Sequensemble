@@ -1,19 +1,19 @@
 const Max = require('max-api');
 const path = require('path');
 const io = require('socket.io-client');
-const socket = io('http://localhost:3000');
+const url = 'http://cm.chriscritter.com';
+// const url = 'http://localhost:3000';
+const socket = io(`${url}/maxclients`);
 
 socket.on('connect', () => {
 	Max.post('Connection successful.');
 });
 
 socket.on('freq', (hz) => {
-  Max.post(hz);
+  // Max.post(hz);
 	Max.outlet('freq', hz);
+  // Max.outlet('test', {a: 1, b: 2});
 });
-
-// This will be printed directly to the Max console
-Max.post(`Loaded the ${path.basename(__filename)} script`);
 
 // Use the 'addHandler' function to register a function for a particular message
 Max.addHandler('bang', () => {

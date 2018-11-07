@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/ccritter/crowd-influenced-music#readme",
   "dependencies": {
+    "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "serve-favicon": "^2.5.0",
     "socket.io": "^2.1.1"
   }
 }
