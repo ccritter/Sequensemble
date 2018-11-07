@@ -1,13 +1,13 @@
-const Max = require('max-api');
-const express = require('express');
 const path = require('path');
-const bodyParser = require('bodyParser');
-const app = express();
+// const bodyParser = require('body-parser');
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const port = 3000;
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json());
-app.use(express.static(/*TODO*/));
+// app.use(bodyParser.urlencoded({ extended: false }))
+// app.use(bodyParser.json());
+// app.use(express.static(/*TODO*/));
 
 // app.use((req, res) => {
 //   res.setHeader('Content-Type', 'text/plain')
@@ -16,28 +16,39 @@ app.use(express.static(/*TODO*/));
 // });
 
 app.post('/', (req, res) => {
-	res.end();
+  res.end();
 
-	if (req.body.hasOwnProperty('type') /* && (req.body.type === ?) */) {
-		// Max.post(`points ${req.body.data.length}`);
-		Max.outlet(req.body);
-	}
+  if (req.body.hasOwnProperty('type') /* && (req.body.type === ?) */) {
+    // Max.post(`points ${req.body.data.length}`);
+    Max.outlet(req.body);
+  }
 });
 
-
-// This will be printed directly to the Max console
-Max.post(`Loaded the ${path.basename(__filename)} script`);
-
-// Use the 'addHandler' function to register a function for a particular message
-Max.addHandler('bang', () => {
-	Max.post("Who you think you bangin'?");
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/temp.html');
 });
 
-// Use the 'outlet' function to send messages out of node.script's outlet
-Max.addHandler('echo', (msg) => {
-	Max.outlet(msg);
+let freq = 110;
+
+// TODO: PROTECT AGAINST MALICIOUS SOCKET CONNECTIONS
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  
+  freq *= 2;
+
+  io.emit('freq', freq);
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+    freq = freq / 2;
+    io.emit('freq', freq);
+  });
 });
 
-app.listen(port, () => {
-	console.log('ready');
+io.on('disconnect', () => {
+
+});
+
+http.listen(port, () => {
+  console.log('ready');
 });

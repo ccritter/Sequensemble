@@ -1,0 +1,31 @@
+{
+  "name": "crowd-influenced-music",
+  "version": "1.0.0",
+  "description": "Computer Music final project 2018",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccritter/crowd-influenced-music.git"
+  },
+  "keywords": [
+    "music",
+    "node",
+    "max",
+    "synthesizer",
+    "mxp"
+  ],
+  "author": "Chris Ritter",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ccritter/crowd-influenced-music/issues"
+  },
+  "homepage": "https://github.com/ccritter/crowd-influenced-music#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1"
+  }
+}
