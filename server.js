@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const server = app.listen(port)
-// const http = require('http').Server(app);
 const path = require('path');
 
 const bodyParser = require('body-parser');
@@ -35,7 +34,7 @@ app.get('/', (req, res) => {
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  var err = new Error("Not Found");
+  var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
@@ -44,7 +43,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
   res.status(err.status || 500);
@@ -56,7 +55,7 @@ app.use((err, req, res, next) => {
 //          SOCKETS          //
 ///////////////////////////////
 
-let freq = 110;
+let curNote;
 
 /*
 MAX CLIENTS
@@ -64,7 +63,7 @@ MAX CLIENTS
 let maxClients = io.of('/maxclients');
 maxClients.on('connection', (socket) => {
   console.log('a Max client connected');
-  socket.emit('freq', freq);
+  socket.emit('note', curNote);
 });
 
 
@@ -76,18 +75,13 @@ let participants = io.of('/participants');
 participants.on('connection', (socket) => {
   // TODO: PROTECT AGAINST MALICIOUS SOCKET CONNECTIONS
   console.log('a participant connected');
-  
-  freq *= 2;
-
-  maxClients.emit('freq', freq);
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
-    freq = freq / 2;
-    maxClients.emit('freq', freq);
+  });
+
+  socket.on('note', (noteNum) => {
+    curNote = noteNum;
+    maxClients.emit('note', noteNum);
   });
 });
-
-// http.listen(port, () => {
-//   console.log('ready');
-// });
