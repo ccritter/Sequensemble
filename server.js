@@ -55,7 +55,10 @@ app.use((err, req, res, next) => {
 //          SOCKETS          //
 ///////////////////////////////
 
-let curNote;
+// Socket id -> Sequencer id
+let idToSeq = new Map();
+// List of booleans, denoting if they are currently in use. Init first elem to true so no one has 0 id
+let activeSeqs = [true];
 
 /*
 MAX CLIENTS
@@ -63,10 +66,8 @@ MAX CLIENTS
 let maxClients = io.of('/maxclients');
 maxClients.on('connection', (socket) => {
   console.log('a Max client connected');
-  socket.emit('note', curNote);
+  // Send new client instance all user data.
 });
-
-
 
 /*
 PARTICIPANTS
@@ -74,14 +75,28 @@ PARTICIPANTS
 let participants = io.of('/participants');
 participants.on('connection', (socket) => {
   // TODO: PROTECT AGAINST MALICIOUS SOCKET CONNECTIONS
-  console.log('a participant connected');
+  console.log(`a participant with id ${socket.id} connected`);
+
+  // Find the first inactive voice
+  let newSeq = activeSeqs.findIndex(active => !active);
+  if (newSeq < 0) {
+    newSeq = activeSeqs.length;
+    activeSeqs.push(true);
+  }
+
+  activeSeqs[newSeq] = true;
+  idToSeq.set(socket.id, newSeq);
+  maxClients.emit('newuser', newSeq);
 
   socket.on('disconnect', () => {
+    let seq = idToSeq.get(socket.id);
+    activeSeqs[seq] = false;
+    idToSeq.delete(socket.id);
+    maxClients.emit('userleft', seq);
     console.log('user disconnected');
   });
 
-  socket.on('note', (noteNum) => {
-    curNote = noteNum;
-    maxClients.emit('note', noteNum);
-  });
+  // TODO: Ratelimit requests, only emit every so often (or only have the client emit every so often)
+  socket.on('note', (note) => maxClients.emit('note', [idToSeq.get(socket.id), note.x, note.y, note.val]));
+  socket.on('vel', (vel) => maxClients.emit('vel', [idToSeq.get(socket.id), vel.col, vel.val]));
 });

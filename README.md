@@ -1,1 +1,1 @@
-# crowd-influenced-music
+# Sequensemble

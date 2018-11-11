@@ -1,5 +1,5 @@
 {
-  "name": "crowd-influenced-music",
+  "name": "Sequensemble",
   "version": "1.0.0",
   "description": "Computer Music final project 2018",
   "main": "server.js",
@@ -9,21 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ccritter/crowd-influenced-music.git"
+    "url": "git+https://github.com/ccritter/Sequensemble.git"
   },
   "keywords": [
     "music",
     "node",
     "max",
+    "mxp",
     "synthesizer",
-    "mxp"
+    "sequencer"
   ],
   "author": "Chris Ritter",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ccritter/crowd-influenced-music/issues"
+    "url": "https://github.com/ccritter/Sequensemble/issues"
   },
-  "homepage": "https://github.com/ccritter/crowd-influenced-music#readme",
+  "homepage": "https://github.com/ccritter/Sequensemble#readme",
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.4",

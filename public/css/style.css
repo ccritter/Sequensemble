@@ -21,3 +21,8 @@ th, td {
 a {
   color: #00B7FF;
 }
+
+#sequencer {
+  width:100%;
+  height:1000px;
+}
