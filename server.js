@@ -55,10 +55,10 @@ app.use((err, req, res, next) => {
 //          SOCKETS          //
 ///////////////////////////////
 
-// Socket id -> Sequencer id
-let idToSeq = new Map();
+const MAX_NUM_USERS = 32;
 // List of booleans, denoting if they are currently in use. Init first elem to true so no one has 0 id
-let activeSeqs = [true];
+let activeSeqs = [true].concat([...Array(MAX_NUM_USERS)].map(e => false));
+let numConnected = 0;
 
 /*
 MAX CLIENTS
@@ -75,28 +75,30 @@ PARTICIPANTS
 let participants = io.of('/participants');
 participants.on('connection', (socket) => {
   // TODO: PROTECT AGAINST MALICIOUS SOCKET CONNECTIONS
-  console.log(`a participant with id ${socket.id} connected`);
+  console.log(`a participant connected`);
+  numConnected++;
+  // TODO: Send the user a notification that they were booted because the site is full
+  if (numConnected > MAX_NUM_USERS) socket.disconnect(true);
 
   // Find the first inactive voice
-  let newSeq = activeSeqs.findIndex(active => !active);
-  if (newSeq < 0) {
-    newSeq = activeSeqs.length;
-    activeSeqs.push(true);
+  let thisSeq = activeSeqs.findIndex(active => !active);
+  if (thisSeq < 0) {
+    // Invariant: This will never happen because we prevent going over the max connections, so there should always be an open seq.
+    throw "This should never be thrown"
   }
 
-  activeSeqs[newSeq] = true;
-  idToSeq.set(socket.id, newSeq);
-  maxClients.emit('newuser', newSeq);
+  activeSeqs[thisSeq] = true;
+  maxClients.emit('newuser', thisSeq);
 
   socket.on('disconnect', () => {
-    let seq = idToSeq.get(socket.id);
-    activeSeqs[seq] = false;
-    idToSeq.delete(socket.id);
-    maxClients.emit('userleft', seq);
+    numConnected--;
+    activeSeqs[thisSeq] = false;
+    maxClients.emit('userleft', thisSeq);
     console.log('user disconnected');
   });
 
   // TODO: Ratelimit requests, only emit every so often (or only have the client emit every so often)
-  socket.on('note', (note) => maxClients.emit('note', [idToSeq.get(socket.id), note.x, note.y, note.val]));
-  socket.on('vel', (vel) => maxClients.emit('vel', [idToSeq.get(socket.id), vel.col, vel.val]));
+  socket.on('note', note => maxClients.emit('note', [thisSeq, note.x, note.y, note.val]));
+  socket.on('vel', vel => maxClients.emit('vel', [thisSeq, vel.col, vel.val]));
+  socket.on('env', adsr => maxClients.emit('env', [thisSeq, adsr.type, adsr.val]));
 });

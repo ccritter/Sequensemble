@@ -22,7 +22,15 @@ a {
   color: #00B7FF;
 }
 
+/* Make a class for interface panels */
 #sequencer {
   width:100%;
   height:1000px;
+  margin: auto;
+}
+
+#adsr {
+  width:100%;
+  height:500px;
+  margin: auto;
 }
