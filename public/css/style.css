@@ -1,36 +1,76 @@
-h1 {
-  font: 1em "Lucida Grande", Helvetica, Arial, sans-serif;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+  background-color: #000;
 }
 
-body {
-  padding: 50px;
-  font: 1.5em "Lucida Grande", Helvetica, Arial, sans-serif;
+.container,
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
-table {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+.panel {
+  width: 95%;
 }
 
-th, td {
-    border: 1px solid black;
+.main,
+.knobs {
+  display: flex;
+  flex-direction: column;
 }
 
-a {
-  color: #00B7FF;
+.header {
+  height: 5%;
 }
 
-/* Make a class for interface panels */
+.main {
+  height: 70%
+}
+
+#octavebuttons {
+  height: 5%;
+}
+
 #sequencer {
-  width:100%;
-  height:1000px;
-  margin: auto;
+  height: 95%;
 }
 
-#adsr {
-  width:100%;
-  height:500px;
-  margin: auto;
+.knobs {
+  height: 25%;
+}
+
+#adsr,
+#instruments {
+  height: 50%
+}
+
+
+/*@media only screen and (max-width: 767px) {
+  body {
+    background-color: #222222;
+  }
+}*/
+
+@media only screen and (min-width: 768px) and (max-width: 1199px) {
+  .panel {
+    width: 85%
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .main {
+    width: 50%;
+    height: 90%;
+  }
+
+  .knobs {
+    width: 50%;
+    height: 30%;
+  }
+
 }

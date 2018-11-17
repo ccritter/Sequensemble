@@ -2,13 +2,56 @@ var socket = io('/participants');
 
 var sequencer = new Interface.Panel({ container:("#sequencer") });
 sequencer.background = 'black';
+
+var octave = 3;
+
+var octavebuttons = new Interface.Panel({ container:("#octavebuttons") });
+
+var downOctave = new Interface.Button({ 
+  bounds:[0,0,.125,1],
+  label:'◀',
+  mode:'momentary', 
+  ontouchmouseup: function() {
+    if (octave > 0) {
+      octave--;
+      sendOctave();
+      octaveLabel.setValue('Octave: ' + octave);
+    }
+  }
+});
+
+var octaveLabel = new Interface.Label({
+  bounds:[.125,0.3,.125,.5],
+  value:'Octave: 3'
+});
+
+var upOctave = new Interface.Button({ 
+  bounds:[.25,0,.125,1],
+  label:'▶',
+  mode:'momentary',
+  ontouchmousedown: function() {
+    if (octave < 7) {
+      octave++;
+      sendOctave();
+      octaveLabel.setValue('Octave: ' + octave);
+    }
+  }
+});
+
+function sendOctave() {
+  socket.emit('oct', octave); 
+}
+
+octavebuttons.background = 'black';
+octavebuttons.add(downOctave, octaveLabel, upOctave);
+
+
+
 var sequencerButtons = new Interface.MultiButton({
-  rows:12, columns:16,
-  bounds:[.05,.05,.9,.5],
+  rows:13, columns:16,
+  bounds:[0,0,.999,.75],
   onvaluechange : function(row, col, value) {
     socket.emit('note', {x: col, y: row, val: value});
-    // multiButtonLabel
-    // .setValue( 'row : ' + row + ' , col : ' + col + ' , value : ' + value);
   },
 });
 // // TODO Remove these
@@ -20,21 +63,12 @@ var sequencerButtons = new Interface.MultiButton({
 
 var velocities = new Interface.MultiSlider({ 
   count:16,
-  bounds:[.05,.55,.9,.2],
+  bounds:[0,.75,.999,.249],
   onvaluechange : function(number, value) {
     socket.emit('vel', {col: number, val: value});
     // multiSliderLabel.setValue( 'num : ' + number + ' , value : ' + value);
   }
 });
-
-// var multiSliderLabel = new Interface.Label({ 
-//   bounds:[.05, .9, .9, .1],
-//   hAlign:"left",
-//   value:" ",
-// });
-
-// a.background = 'black';
-// a.add(multiSlider, multiSliderLabel);
 
 // sequencer.add(sequencerButtons, multiButtonLabel, velocities, multiSliderLabel);
 sequencer.add(sequencerButtons, velocities);
@@ -55,7 +89,7 @@ var a = new Interface.Knob({
   }
 });
 var alabel = new Interface.Label({
-  bounds:[.05, .25, .1, .05],
+  bounds:[0, .75, .2, .5],
   value:"",
 });
 var d = new Interface.Knob({ 
@@ -70,7 +104,7 @@ var d = new Interface.Knob({
   }
 });
 var dlabel = new Interface.Label({
-  bounds:[.25, .25, .1, .05],
+  bounds:[.2, .75, .2, .5],
   value:"",
 });
 var s = new Interface.Knob({ 
@@ -84,7 +118,7 @@ var s = new Interface.Knob({
   }
 });  
 var slabel = new Interface.Label({
-  bounds:[.45, .25, .1, .05],
+  bounds:[.4, .75, .2, .5],
   value:"",
 });
 var slen = new Interface.Knob({ 
@@ -98,7 +132,7 @@ var slen = new Interface.Knob({
   }
 });
 var slenlabel = new Interface.Label({
-  bounds:[.6, .25, .2, .5],
+  bounds:[.6, .75, .2, .5],
   value:"",
 });
 var r = new Interface.Knob({ 
@@ -112,7 +146,7 @@ var r = new Interface.Knob({
   }
 });
 var rlabel = new Interface.Label({
-  bounds:[.85, .25, .1, .05],
+  bounds:[.8, .75, .2, .5],
   value:"",
 });
 
@@ -138,3 +172,13 @@ function logScale(num, max) {
 function roundTwoDecimalPlaces(val) {
   return Math.round(val * 100) / 100;
 }
+
+
+$(window).resize(function () {
+  octavebuttons.redoBoundaries();
+  octavebuttons.refresh();
+  sequencer.redoBoundaries();
+  sequencer.refresh();
+  adsr.redoBoundaries();
+  adsr.refresh();
+});

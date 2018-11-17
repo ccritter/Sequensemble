@@ -6,16 +6,17 @@
     <link rel='stylesheet' href='/css/style.css' />
   </head>
   <body>
-    <h1><b><%= title %></b></h1>
-
-    <!-- <form action="">
-      <input id="note" type="number" min="0" max="127" autocomplete="off" />
-      <button>Send</button>
-    </form> -->
-    <div id="sequencer"></div>
-    <div id="adsr"></div>
-
-
+    <div class="container">
+      <div class="panel header"><img src="/img/logo.png" /></div>
+      <div class="panel main">
+        <div class="panel" id="octavebuttons"></div>
+        <div class="panel" id="sequencer"></div>
+      </div>
+      <div class="panel knobs">
+        <div class="panel" id="instruments"></div>
+        <div class="panel" id="adsr"></div>
+      </div>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://zeptojs.com/zepto.min.js"></script>
     <script src="/js/sockets.js"></script>

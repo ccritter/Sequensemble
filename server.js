@@ -99,6 +99,7 @@ participants.on('connection', (socket) => {
 
   // TODO: Ratelimit requests, only emit every so often (or only have the client emit every so often)
   socket.on('note', note => maxClients.emit('note', [thisSeq, note.x, note.y, note.val]));
+  socket.on('oct', oct => maxClients.emit('oct', [thisSeq, oct]));
   socket.on('vel', vel => maxClients.emit('vel', [thisSeq, vel.col, vel.val]));
   socket.on('env', adsr => maxClients.emit('env', [thisSeq, adsr.type, adsr.val]));
 });
