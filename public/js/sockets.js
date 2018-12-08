@@ -101,6 +101,7 @@ function setInstrument(idx) {
       $('#amsettings').show();
       break;
     case 'fm':
+      $('#fmsettings').show();
       break;
     case 'grain':
       break;
@@ -189,6 +190,60 @@ function sendAM() {
 
 amPanel.add(amCarrier, amModRate, amModRateLabel, amModDepth, amModDepthLabel);
 $('#amsettings').hide();
+
+
+
+// Frequency Modulation
+var fmData = [null, null];
+var fmPanel = new Interface.Panel({ container:('#fmsettings') });
+
+var fmRatio = new Interface.Knob({
+  // 0 to 5
+  bounds:[.25,.05,.1],
+  value:.25,
+  usesRotation:false,
+  centerZero: false,
+  oninit: function () { this.onvaluechange() },
+  onvaluechange: function () {
+    fmData[0] = roundTwoDecimalPlaces(this.value * 5);
+    fmRatioLabel.setValue('Ratio: ' + fmData[0]);
+    sendFM();
+  }
+});
+
+var fmRatioLabel = new Interface.Label({
+  bounds:[.2, .75, .2, .5],
+  value:"",
+});
+
+var fmIndex = new Interface.Knob({
+  // 0 to 10
+  bounds:[.65,.05,.1],
+  value:.75,
+  usesRotation:false,
+  centerZero: false,
+  oninit: function () { this.onvaluechange() },
+  onvaluechange: function () {
+    // Max mod rate is 1000 Hz.
+    fmData[1] = roundTwoDecimalPlaces(this.value * 10);
+    fmIndexLabel.setValue('Mod Depth: ' + fmData[1]);
+    sendFM();
+  }
+});
+
+var fmIndexLabel = new Interface.Label({
+  bounds:[.60, .75, .2, .5],
+  value:"",
+});
+
+function sendFM() {
+  socket.emit('ins', {type:'fm', vals:fmData});
+}
+
+fmPanel.add(fmRatio, fmRatioLabel, fmIndex, fmIndexLabel);
+$('#fmsettings').hide();
+
+
 
 
 

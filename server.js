@@ -29,7 +29,7 @@ app.post('/', (req, res) => {
 
 // Serve the main page
 app.get('/', (req, res) => {
-  res.render('index', {title: 'Test'});
+  res.render('index', {title: 'Sequensemble'});
 });
 
 // catch 404 and forward to error handler
