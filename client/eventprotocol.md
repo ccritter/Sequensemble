@@ -16,12 +16,12 @@ An ADSR is:
 
 An instype, param is:
 - 'osc'
-  - 0 -> Sine
-  - 1 -> Saw
-  - 2 -> Square
+  - 1 -> Sine
+  - 2 -> Saw
+  - 3 -> Square
 - 'am' -> Amplitude Modulation of Sines
 - 'fm' -> Frequency Modulation of Sines
 - 'grain' -> Async Granular Synthesis
 - 'sub' -> Subtractive Synthesis of Saw?
-- -> Plucked string physical model that we did that one time?
+- 'pluck' -> Plucked string physical model that we did that one time?
 - 'drum'

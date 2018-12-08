@@ -1,8 +1,8 @@
 var socket = io('/participants');
 
-var sequencer = new Interface.Panel({ container:("#sequencer") });
-sequencer.background = 'black';
-
+//////////////////////////////
+////    OCTAVE BUTTONS    ////
+//////////////////////////////
 var octave = 3;
 
 var octavebuttons = new Interface.Panel({ container:("#octavebuttons") });
@@ -22,7 +22,7 @@ var downOctave = new Interface.Button({
 
 var octaveLabel = new Interface.Label({
   bounds:[.125,0.3,.125,.5],
-  value:'Octave: 3'
+  value:'Octave: ' + octave
 });
 
 var upOctave = new Interface.Button({ 
@@ -42,10 +42,13 @@ function sendOctave() {
   socket.emit('oct', octave); 
 }
 
-octavebuttons.background = 'black';
 octavebuttons.add(downOctave, octaveLabel, upOctave);
 
+//////////////////////////////
+////      SEQUENCER       ////
+//////////////////////////////
 
+var sequencer = new Interface.Panel({ container:("#sequencer") });
 
 var sequencerButtons = new Interface.MultiButton({
   rows:13, columns:16,
@@ -54,12 +57,6 @@ var sequencerButtons = new Interface.MultiButton({
     socket.emit('note', {x: col, y: row, val: value});
   },
 });
-// // TODO Remove these
-// var multiButtonLabel = new Interface.Label({ 
-//   bounds:[.05,.5, .9, .1],
-//   hAlign:"left",
-//   value:""
-// });
 
 var velocities = new Interface.MultiSlider({ 
   count:16,
@@ -70,12 +67,112 @@ var velocities = new Interface.MultiSlider({
   }
 });
 
-// sequencer.add(sequencerButtons, multiButtonLabel, velocities, multiSliderLabel);
 sequencer.add(sequencerButtons, velocities);
 
-// TODO: Oninit set/send values?
+//////////////////////////////
+////   INSTRUMENT PANEL   ////
+//////////////////////////////
+var curInst;
+
+// var instSettings = new Interface.Panel({ container:('#instrumentsettings') });
+
+function setInstrument(idx) {
+  // instSettings.children.forEach(child => instSettings.remove(child));
+  // instSettings.refresh();
+  // instSettings.clear(); // OR remove() all children?
+  $('#instrumentsettings').children().hide()
+  // .each(function (id, elem) { 
+  //   console.log(elem); 
+  //   elem.hide();
+  // });
+  instList = [null, 'osc','am','fm','grain','sub','pluck','drum']
+  curInst = instList[idx];
+  switch (curInst) {
+    case 'osc':
+      $('#oscsettings').show();
+      break;
+    case 'am':
+      break;
+    case 'fm':
+      break;
+    case 'grain':
+      break;
+    case 'sub':
+      break;
+    case 'pluck':
+      break;
+    case 'drum':
+      break;
+  }
+  // instSettings.refresh();
+}
+
+
+var oscPanel = new Interface.Panel({ container:('#oscsettings') });
+
+var oscMenu = new Interface.Menu({
+  bounds:[.25, .35, .5, .25],
+  options: ['Sine','Saw','Square'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    socket.emit('ins', {type:curInst, vals:[this.options.indexOf(this.value) + 1]});
+  }
+});
+
+oscPanel.add(oscMenu);
+$('#oscsettings').hide();
+
+
+var amPanel = new Interface.Panel({
+  container:('#amsettings')})
+
+var amCarrier = new Interface.Menu({
+  bounds:[.25, .35, .5, .25],
+  options: ['Sine','Saw','Square'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    socket.emit('ins', {type:curInst, vals:[this.options.indexOf(this.value) + 1]});
+  }
+});
+
+var amModRate = new Interface.Knob({
+  // 20 to 1000 logarithmic
+});
+var amModDepth = new Interface.Knob({
+  // 0 to 1
+});
+
+// instSettings.add(
+//   oscMenu,
+//   amCarrier, am
+//   );
+
+
+
+
+var instruments = new Interface.Panel({ container:("#instruments") });
+
+var instrumentSelector = new Interface.Menu({ 
+  bounds:[.25,0,.5,1],
+  options:['Single Oscillator','AM','FM','Granular','Subtractive', 'Plucked String', 'Drums'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    var insIdx = this.options.indexOf(this.value) + 1;
+    setInstrument(insIdx);
+    socket.emit('ins', {type:'inschange', vals:[insIdx]});
+  }
+});
+
+instruments.add(instrumentSelector)
+
+
+
+
+//////////////////////////////
+////    ADSR ENVELOPE     ////
+//////////////////////////////
+
 var adsr = new Interface.Panel({ container:("#adsr") });
-adsr.background = 'black';
 
 var a = new Interface.Knob({ 
   bounds:[.05,.05,.1], // TODO: put lower on the panel so that when you drag up it doesn't leave panel and go odd. alternatively, put everything on the same panel
@@ -174,11 +271,13 @@ function roundTwoDecimalPlaces(val) {
 }
 
 
+//////////////////////////////
+////       HELPERS        ////
+//////////////////////////////
+
 $(window).resize(function () {
   octavebuttons.redoBoundaries();
-  octavebuttons.refresh();
   sequencer.redoBoundaries();
-  sequencer.refresh();
+  instruments.redoBoundaries();
   adsr.redoBoundaries();
-  adsr.refresh();
 });

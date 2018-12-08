@@ -15,6 +15,8 @@ socket.on('note', note => Max.outlet('note', ...note));
 socket.on('oct', oct => Max.outlet('oct', ...oct));
 socket.on('vel', vel => Max.outlet('vel', ...vel));
 socket.on('env', adsr => Max.outlet('env', ...adsr));
+socket.on('ins', ins => Max.outlet('ins', ...ins));
+
 
 
 // socket.on('note', (noteNum) => {
