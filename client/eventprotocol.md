@@ -15,11 +15,14 @@ An ADSR is:
 ['ins', [id, 'inschange', int]]
 
 An instype, param is:
-- 'osc'
+- 'osc' : [int]
   - 1 -> Sine
   - 2 -> Saw
   - 3 -> Square
-- 'am' -> Amplitude Modulation of Sines
+- 'am' : [int, int, float]
+  - see 'osc'
+  - mod rate -> 20 to 1000
+  - mod depth -> 0 to 0.5
 - 'fm' -> Frequency Modulation of Sines
 - 'grain' -> Async Granular Synthesis
 - 'sub' -> Subtractive Synthesis of Saw?

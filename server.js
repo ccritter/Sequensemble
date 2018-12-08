@@ -55,7 +55,7 @@ app.use((err, req, res, next) => {
 //          SOCKETS          //
 ///////////////////////////////
 
-const MAX_NUM_USERS = 32;
+const MAX_NUM_USERS = 20;
 // List of booleans, denoting if they are currently in use. Init first elem to true so no one has 0 id
 let activeSeqs = [true].concat([...Array(MAX_NUM_USERS)].map(e => false));
 let numConnected = 0;

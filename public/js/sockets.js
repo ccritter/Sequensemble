@@ -75,23 +75,30 @@ sequencer.add(sequencerButtons, velocities);
 var curInst;
 
 // var instSettings = new Interface.Panel({ container:('#instrumentsettings') });
+var instruments = new Interface.Panel({ container:("#instruments") });
+
+var instrumentSelector = new Interface.Menu({ 
+  bounds:[.25,0,.5,1],
+  options:['Single Oscillator','AM','FM','Granular','Subtractive', 'Plucked String', 'Drums'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    console.log(this.value)
+    setInstrument(this.options.indexOf(this.value) + 1);
+  }
+});
 
 function setInstrument(idx) {
-  // instSettings.children.forEach(child => instSettings.remove(child));
-  // instSettings.refresh();
-  // instSettings.clear(); // OR remove() all children?
+  socket.emit('ins', {type:'inschange', vals:[idx]});
   $('#instrumentsettings').children().hide()
-  // .each(function (id, elem) { 
-  //   console.log(elem); 
-  //   elem.hide();
-  // });
-  instList = [null, 'osc','am','fm','grain','sub','pluck','drum']
+  instList = [null, 'osc','am','fm','grain','sub','pluck','drum'];
   curInst = instList[idx];
+  
   switch (curInst) {
     case 'osc':
       $('#oscsettings').show();
       break;
     case 'am':
+      $('#amsettings').show();
       break;
     case 'fm':
       break;
@@ -104,10 +111,9 @@ function setInstrument(idx) {
     case 'drum':
       break;
   }
-  // instSettings.refresh();
 }
 
-
+// Single Oscillator
 var oscPanel = new Interface.Panel({ container:('#oscsettings') });
 
 var oscMenu = new Interface.Menu({
@@ -115,7 +121,7 @@ var oscMenu = new Interface.Menu({
   options: ['Sine','Saw','Square'],
   oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
   onvaluechange: function() { 
-    socket.emit('ins', {type:curInst, vals:[this.options.indexOf(this.value) + 1]});
+    socket.emit('ins', {type:'osc', vals:[this.options.indexOf(this.value) + 1]});
   }
 });
 
@@ -123,49 +129,73 @@ oscPanel.add(oscMenu);
 $('#oscsettings').hide();
 
 
-var amPanel = new Interface.Panel({
-  container:('#amsettings')})
+// Amplitude Modulation
+var amData = [null, null, null];
+var amPanel = new Interface.Panel({ container:('#amsettings') });
 
 var amCarrier = new Interface.Menu({
-  bounds:[.25, .35, .5, .25],
+  bounds:[.05, .35, .5, .25],
   options: ['Sine','Saw','Square'],
   oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
   onvaluechange: function() { 
-    socket.emit('ins', {type:curInst, vals:[this.options.indexOf(this.value) + 1]});
+    amData[0] = this.options.indexOf(this.value) + 1;
+    sendAM();
   }
 });
 
 var amModRate = new Interface.Knob({
-  // 20 to 1000 logarithmic
-});
-var amModDepth = new Interface.Knob({
-  // 0 to 1
-});
-
-// instSettings.add(
-//   oscMenu,
-//   amCarrier, am
-//   );
-
-
-
-
-var instruments = new Interface.Panel({ container:("#instruments") });
-
-var instrumentSelector = new Interface.Menu({ 
-  bounds:[.25,0,.5,1],
-  options:['Single Oscillator','AM','FM','Granular','Subtractive', 'Plucked String', 'Drums'],
-  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
-  onvaluechange: function() { 
-    var insIdx = this.options.indexOf(this.value) + 1;
-    setInstrument(insIdx);
-    socket.emit('ins', {type:'inschange', vals:[insIdx]});
+  // 0 to 1000 logarithmic
+  bounds:[.65,.05,.1],
+  value:.25,
+  usesRotation:false,
+  centerZero: false,
+  oninit: function () { this.onvaluechange() },
+  onvaluechange: function () {
+    // Max mod rate is 1000 Hz.
+    amData[1] = logScale(this.value, 1000);
+    amModRateLabel.setValue('Mod Rate: ' + amData[1] + 'Hz');
+    sendAM();
   }
 });
 
+var amModRateLabel = new Interface.Label({
+  bounds:[.6, .75, .2, .5],
+  value:"",
+});
+
+var amModDepth = new Interface.Knob({
+  // 0 to 1
+  bounds:[.85,.05,.1],
+  value:.75,
+  usesRotation:false,
+  centerZero: false,
+  oninit: function () { this.onvaluechange() },
+  onvaluechange: function () {
+    // Max mod rate is 1000 Hz.
+    amData[2] = roundTwoDecimalPlaces(this.value);
+    amModDepthLabel.setValue('Mod Depth: ' + amData[2]);
+    sendAM();
+  }
+});
+
+var amModDepthLabel = new Interface.Label({
+  bounds:[.8, .75, .2, .5],
+  value:"",
+});
+
+function sendAM() {
+  socket.emit('ins', {type:'am', vals:amData});
+}
+
+amPanel.add(amCarrier, amModRate, amModRateLabel, amModDepth, amModDepthLabel);
+$('#amsettings').hide();
+
+
+
+
+
+
 instruments.add(instrumentSelector)
-
-
 
 
 //////////////////////////////
@@ -279,5 +309,7 @@ $(window).resize(function () {
   octavebuttons.redoBoundaries();
   sequencer.redoBoundaries();
   instruments.redoBoundaries();
+  oscPanel.redoBoundaries();
+  amPanel.redoBoundaries();
   adsr.redoBoundaries();
 });
