@@ -120,7 +120,7 @@ var oscPanel = new Interface.Panel({ container:('#oscsettings') });
 
 var oscMenu = new Interface.Menu({
   bounds:[.25, .35, .5, .25],
-  options: ['Sine','Saw','Square'],
+  options: ['Sine','Triangle','Saw','Square'],
   oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
   onvaluechange: function() { 
     socket.emit('ins', {type:'osc', vals:[this.options.indexOf(this.value) + 1]});
@@ -137,7 +137,7 @@ var amPanel = new Interface.Panel({ container:('#amsettings') });
 
 var amCarrier = new Interface.Menu({
   bounds:[.05, .35, .5, .25],
-  options: ['Sine','Saw','Square'],
+  options: ['Sine','Triangle','Saw','Square'],
   oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
   onvaluechange: function() { 
     amData[0] = this.options.indexOf(this.value) + 1;
