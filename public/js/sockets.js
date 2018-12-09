@@ -79,7 +79,7 @@ var instruments = new Interface.Panel({ container:("#instruments") });
 
 var instrumentSelector = new Interface.Menu({ 
   bounds:[.25,0,.5,1],
-  options:['Single Oscillator','AM','FM','Granular','Subtractive', 'Plucked String', 'Drums'],
+  options:['Single Oscillator','AM','FM','Subtractive', 'Plucked String', 'Drums'],
   oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
   onvaluechange: function() { 
     setInstrument(this.options.indexOf(this.value) + 1);
@@ -89,7 +89,7 @@ var instrumentSelector = new Interface.Menu({
 function setInstrument(idx) {
   socket.emit('ins', {type:'inschange', vals:[idx]});
   $('#instrumentsettings').children().hide()
-  instList = [null, 'osc','am','fm','grain','sub','pluck','drum'];
+  instList = [null, 'osc','am','fm','sub','pluck','drum'];
   curInst = instList[idx];
   
   switch (curInst) {
@@ -101,8 +101,6 @@ function setInstrument(idx) {
       break;
     case 'fm':
       $('#fmsettings').show();
-      break;
-    case 'grain':
       break;
     case 'sub':
       $('#subsettings').show();
