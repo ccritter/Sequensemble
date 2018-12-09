@@ -1,8 +1,8 @@
 const Max = require('max-api');
 const path = require('path');
 const io = require('socket.io-client');
-// const url = 'http://cm.chriscritter.com';
-const url = 'http://localhost:3000';
+const url = 'http://cm.chriscritter.com';
+// const url = 'http://localhost:3000';
 const socket = io(`${url}/maxclients`);
 
 socket.on('connect', () => {
