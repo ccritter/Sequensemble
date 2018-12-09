@@ -23,8 +23,17 @@ An instype, param is:
   - see 'osc'
   - mod rate -> 20 to 1000
   - mod depth -> 0 to 0.5
-- 'fm' -> Frequency Modulation of Sines
+- 'fm' : [float, float]
+  - ratio -> 0 to 5
+  - index -> 0 to 10
 - 'grain' -> Async Granular Synthesis
-- 'sub' -> Subtractive Synthesis of Saw?
-- 'pluck' -> Plucked string physical model that we did that one time?
+- 'sub' : [int, int, float, float]
+  - source -> 1 = tri, 2 = saw, 3 = rect
+  - filter type -> 0 to 7
+  - center freq -> 1.2 to 15
+  - Q -> 1 to 5
+- 'pluck' : [int]
+  - 1 -> White noise
+  - 2 -> Pink noise
+  - 3 -> Random
 - 'drum'

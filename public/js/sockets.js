@@ -82,7 +82,6 @@ var instrumentSelector = new Interface.Menu({
   options:['Single Oscillator','AM','FM','Granular','Subtractive', 'Plucked String', 'Drums'],
   oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
   onvaluechange: function() { 
-    console.log(this.value)
     setInstrument(this.options.indexOf(this.value) + 1);
   }
 });
@@ -106,6 +105,7 @@ function setInstrument(idx) {
     case 'grain':
       break;
     case 'sub':
+      $('#subsettings').show();
       break;
     case 'pluck':
       $('#plucksettings').show();
@@ -245,6 +245,76 @@ $('#fmsettings').hide();
 
 
 
+// Subtractive
+var subData = [null, null, null, null];
+var subPanel = new Interface.Panel({ container:('#subsettings') });
+
+var subOsc = new Interface.Menu({
+  bounds:[.05, .05, .5, .25],
+  options: ['Triangle','Saw','Square'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    subData[0] = this.options.indexOf(this.value) + 1;
+    sendSub();
+  }
+});
+
+var subFilterType = new Interface.Menu({
+  bounds:[.05, .55, .5, .25],
+  options: ['Lowpass', 'Highpass', 'Bandpass', 'Bandstop', 'Peaknotch', 
+            'Lowshelf', 'Highshelf', 'Resonant'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    subData[1] = this.options.indexOf(this.value);
+    sendSub();
+  }
+});
+
+var subCenterFreq = new Interface.Knob({
+  // 1.2 to 15
+  bounds:[.65,.05,.1],
+  value:.25,
+  usesRotation:false,
+  centerZero: false,
+  oninit: function () { this.onvaluechange() },
+  onvaluechange: function () {
+    // Max mod rate is 1000 Hz.
+    subData[2] = roundTwoDecimalPlaces(this.value * 13.8 + 1.2);
+    subCenterFreqLabel.setValue('Center: ' + subData[2]);
+    sendSub();
+  }
+});
+
+var subCenterFreqLabel = new Interface.Label({
+  bounds:[.6, .75, .2, .5],
+  value:"",
+});
+
+var subQ = new Interface.Knob({
+  // 1 to 5
+  bounds:[.85,.05,.1],
+  value:.75,
+  usesRotation:false,
+  centerZero: false,
+  oninit: function () { this.onvaluechange() },
+  onvaluechange: function () {
+    subData[3] = roundTwoDecimalPlaces(this.value * 4 + 1);
+    subQLabel.setValue('Q: ' + subData[3]);
+    sendSub();
+  }
+});
+
+var subQLabel = new Interface.Label({
+  bounds:[.8, .75, .2, .5],
+  value:"",
+});
+
+function sendSub() {
+  socket.emit('ins', {type:'sub', vals:subData});
+}
+
+subPanel.add(subOsc, subFilterType, subCenterFreq, subCenterFreqLabel, subQ, subQLabel);
+$('#subsettings').hide();
 
 
 // Plucked String
