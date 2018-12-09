@@ -108,6 +108,7 @@ function setInstrument(idx) {
     case 'sub':
       break;
     case 'pluck':
+      $('#plucksettings').show();
       break;
     case 'drum':
       break;
@@ -200,7 +201,7 @@ var fmPanel = new Interface.Panel({ container:('#fmsettings') });
 var fmRatio = new Interface.Knob({
   // 0 to 5
   bounds:[.25,.05,.1],
-  value:.25,
+  value:.4,
   usesRotation:false,
   centerZero: false,
   oninit: function () { this.onvaluechange() },
@@ -224,9 +225,8 @@ var fmIndex = new Interface.Knob({
   centerZero: false,
   oninit: function () { this.onvaluechange() },
   onvaluechange: function () {
-    // Max mod rate is 1000 Hz.
     fmData[1] = roundTwoDecimalPlaces(this.value * 10);
-    fmIndexLabel.setValue('Mod Depth: ' + fmData[1]);
+    fmIndexLabel.setValue('Index: ' + fmData[1]);
     sendFM();
   }
 });
@@ -245,6 +245,22 @@ $('#fmsettings').hide();
 
 
 
+
+
+// Plucked String
+var pluckPanel = new Interface.Panel({ container:('#plucksettings') });
+
+var pluckMenu = new Interface.Menu({
+  bounds:[.25, .35, .5, .25],
+  options: ['White','Pink','Rand'],
+  oninit: function () { this.value = this.options[0]; this.onvaluechange(); },
+  onvaluechange: function() { 
+    socket.emit('ins', {type:'pm', vals:[this.options.indexOf(this.value) + 1]});
+  }
+});
+
+pluckPanel.add(pluckMenu);
+$('#plucksettings').hide();
 
 
 
