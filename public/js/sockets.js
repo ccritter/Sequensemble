@@ -1,4 +1,5 @@
 var socket = io('/participants');
+socket.on('full', () => alert('Server is full.'));
 
 //////////////////////////////
 ////    OCTAVE BUTTONS    ////
@@ -63,7 +64,6 @@ var velocities = new Interface.MultiSlider({
   bounds:[0,.75,.999,.249],
   onvaluechange : function(number, value) {
     socket.emit('vel', {col: number, val: value});
-    // multiSliderLabel.setValue( 'num : ' + number + ' , value : ' + value);
   }
 });
 
@@ -74,7 +74,6 @@ sequencer.add(sequencerButtons, velocities);
 //////////////////////////////
 var curInst;
 
-// var instSettings = new Interface.Panel({ container:('#instrumentsettings') });
 var instruments = new Interface.Panel({ container:("#instruments") });
 
 var instrumentSelector = new Interface.Menu({ 
@@ -151,7 +150,6 @@ var amModRate = new Interface.Knob({
   centerZero: false,
   oninit: function () { this.onvaluechange() },
   onvaluechange: function () {
-    // Max mod rate is 1000 Hz.
     amData[1] = logScale(this.value, 1000);
     amModRateLabel.setValue('Mod Rate: ' + amData[1] + 'Hz');
     sendAM();
@@ -171,7 +169,6 @@ var amModDepth = new Interface.Knob({
   centerZero: false,
   oninit: function () { this.onvaluechange() },
   onvaluechange: function () {
-    // Max mod rate is 1000 Hz.
     amData[2] = roundTwoDecimalPlaces(this.value);
     amModDepthLabel.setValue('Mod Depth: ' + amData[2]);
     sendAM();
@@ -276,7 +273,6 @@ var subCenterFreq = new Interface.Knob({
   centerZero: false,
   oninit: function () { this.onvaluechange() },
   onvaluechange: function () {
-    // Max mod rate is 1000 Hz.
     subData[2] = roundTwoDecimalPlaces(this.value * 13.8 + 1.2);
     subCenterFreqLabel.setValue('Center: ' + subData[2]);
     sendSub();
@@ -332,8 +328,6 @@ $('#plucksettings').hide();
 
 
 
-
-
 instruments.add(instrumentSelector)
 
 
@@ -344,8 +338,8 @@ instruments.add(instrumentSelector)
 var adsr = new Interface.Panel({ container:("#adsr") });
 
 var a = new Interface.Knob({ 
-  bounds:[.05,.05,.1], // TODO: put lower on the panel so that when you drag up it doesn't leave panel and go odd. alternatively, put everything on the same panel
-  value:.25, // TODO: Set initial values
+  bounds:[.05,.05,.1],
+  value:.25,
   usesRotation:false,
   centerZero: false,
   oninit: function () { this.onvaluechange() },
@@ -429,7 +423,7 @@ function sendEnvelopeData(type, val) {
 }
 
 function logScale(num, max) {
-  // Scales from 0 to 1 to 0 to max logarithmically
+  // Scales from 0 to 1 -> 0 to max logarithmically
   var maxv = Math.log(max);
 
   return Math.round(Math.exp(maxv*num));
@@ -450,5 +444,8 @@ $(window).resize(function () {
   instruments.redoBoundaries();
   oscPanel.redoBoundaries();
   amPanel.redoBoundaries();
+  fmPanel.redoBoundaries();
+  subPanel.redoBoundaries();
+  pluckPanel.redoBoundaries();
   adsr.redoBoundaries();
 });
