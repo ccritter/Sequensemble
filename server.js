@@ -66,7 +66,6 @@ PARTICIPANTS
 */
 let participants = io.of('/participants');
 participants.on('connection', (socket) => {
-  // TODO: PROTECT AGAINST MALICIOUS SOCKET CONNECTIONS
   console.log(`a participant connected`);
   numConnected++;
 
