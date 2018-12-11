@@ -37,7 +37,6 @@ app.use((err, req, res, next) => {
 
   // render the error page
   res.status(err.status || 500);
-  // res.render("error"); TODO Make this error page
 });
 
 
@@ -86,7 +85,6 @@ participants.on('connection', (socket) => {
     console.log('a participant disconnected');
   });
 
-  // TODO: Ratelimit requests, only emit every so often (or only have the client emit every so often)
   socket.on('note', note => maxClients.emit('note', [thisSeq, note.x, note.y, note.val]));
   socket.on('oct', oct => maxClients.emit('oct', [thisSeq, oct]));
   socket.on('vel', vel => maxClients.emit('vel', [thisSeq, vel.col, vel.val]));
