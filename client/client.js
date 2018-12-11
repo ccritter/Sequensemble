@@ -5,9 +5,7 @@ const url = 'http://cm.chriscritter.com';
 // const url = 'http://localhost:3000';
 const socket = io(`${url}/maxclients`);
 
-socket.on('connect', () => {
-	Max.post('Connection successful.');
-});
+socket.on('connect', () => Max.post('Connection successful.'));
 
 socket.on('newuser', id => Max.outlet('newuser', id));
 socket.on('userleft', id => Max.outlet('userleft', id));
